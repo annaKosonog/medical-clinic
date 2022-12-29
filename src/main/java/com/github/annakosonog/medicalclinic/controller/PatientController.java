@@ -2,7 +2,6 @@ package com.github.annakosonog.medicalclinic.controller;
 
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Patient;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,26 +30,21 @@ public class PatientController {
 
     @GetMapping("/{email}")
     public ResponseEntity<Patient> getPatient(@PathVariable String email) {
-        return patients.stream()
-                .filter(patient -> patient.getEmail().equals(email))
-                .findFirst()
+        return getPatientByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElseThrow(PatientNotFoundException::new);
     }
 
+
     @PostMapping
     public ResponseEntity<String> addPatient(@RequestBody Patient patient) {
-
         patients.add(patient);
-
         return ResponseEntity.ok("Patient was added successfully");
     }
 
     @DeleteMapping("/{email}")
     public ResponseEntity<String> deletePatient(@PathVariable("email") String email) {
-        patients.stream()
-                .filter(patient -> patient.getEmail().equals(email))
-                .findFirst()
+        getPatientByEmail(email)
                 .map(deletePatients -> ResponseEntity.ok(patients.remove(deletePatients)))
                 .orElseThrow(PatientNotFoundException::new);
 
@@ -59,10 +53,7 @@ public class PatientController {
 
     @PutMapping("/{email}")
     public ResponseEntity<String> updatePatient(@PathVariable("email") String email, @RequestBody Patient patient) {
-        final Optional<Patient> patientDate = patients.stream()
-                .filter(patientEmail -> patientEmail.getEmail().equals(email))
-                .findFirst();
-
+        final Optional<Patient> patientDate = getPatientByEmail(email);
         if (patientDate.isPresent()) {
             Patient updatePatient = patientDate.get();
             updatePatient.setEmail(patient.getEmail());
@@ -72,12 +63,16 @@ public class PatientController {
             updatePatient.setLastName(patient.getLastName());
             updatePatient.setNumberPhone(patient.getNumberPhone());
             updatePatient.setBirthday(patient.getBirthday());
-
             patients.add(updatePatient);
-
             return ResponseEntity.ok("Patient was update successfully");
         } else {
             return ResponseEntity.ok("Patient  update failed");
         }
+    }
+
+    private Optional<Patient> getPatientByEmail(String email) {
+        return patients.stream()
+                .filter(patient -> patient.getEmail().equals(email))
+                .findFirst();
     }
 }
