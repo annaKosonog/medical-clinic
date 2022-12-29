@@ -5,6 +5,7 @@ import com.github.annakosonog.medicalclinic.model.Patient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -69,6 +70,14 @@ public class PatientController {
             return ResponseEntity.ok("Patient  update failed");
         }
     }
+
+    @PatchMapping("/{email}")
+    public ResponseEntity<String> editPatientPassword(@PathVariable String email, @RequestBody String password) {
+        Patient patient = getPatientByEmail(email).orElseThrow(PatientNotFoundException::new);
+        patient.setPassword(password);
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
 
     private Optional<Patient> getPatientByEmail(String email) {
         return patients.stream()
