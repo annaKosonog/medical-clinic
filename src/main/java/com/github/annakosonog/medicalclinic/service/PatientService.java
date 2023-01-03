@@ -42,8 +42,8 @@ public class PatientService {
        patients.remove(patient);
     }
 
-    public void  updatePatient(Patient patient) {
-        Patient patientData = getPatientByEmail(patient.getEmail())
+    public void  updatePatient(Patient patient, String email) {
+        Patient patientData = getPatientByEmail(email)
                 .orElseThrow((PatientNotFoundException::new));
 
         patientData.setEmail(patient.getEmail());

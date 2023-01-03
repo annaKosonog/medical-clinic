@@ -48,8 +48,8 @@ public class PatientController {
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<String> updatePatient(@PathVariable("email") String email, @RequestBody Patient patient) {
-        service.updatePatient(patient);
+    public ResponseEntity<String> updatePatient(@PathVariable String email, @RequestBody Patient patient) {
+        service.updatePatient(patient, email);
         return ResponseEntity.ok("Patient was update successfully");
     }
 
