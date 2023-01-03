@@ -43,23 +43,17 @@ public class PatientService {
     }
 
     public void  updatePatient(Patient patient) {
-        Optional<Patient> patientDate = getPatientByEmail(patient.getEmail());
+        Patient patientData = getPatientByEmail(patient.getEmail())
+                .orElseThrow((PatientNotFoundException::new));
 
-        if (patientDate.isPresent()) {
-            Patient updatePatient = patientDate.get();
-            updatePatient.setEmail(patient.getEmail());
-            updatePatient.setPassword(patient.getPassword());
-            updatePatient.setIdCardNo(patient.getIdCardNo());
-            updatePatient.setFirstName(patient.getFirstName());
-            updatePatient.setLastName(patient.getLastName());
-            updatePatient.setNumberPhone(patient.getNumberPhone());
-            updatePatient.setBirthday(patient.getBirthday());
-            patients.add(updatePatient);
+        patientData.setEmail(patient.getEmail());
+        patientData.setPassword(patient.getPassword());
+        patientData.setIdCardNo(patient.getIdCardNo());
+        patientData.setFirstName(patient.getFirstName());
+        patientData.setLastName(patient.getLastName());
+        patientData.setNumberPhone(patient.getNumberPhone());
+        patientData.setBirthday(patient.getBirthday());
         }
-        if (patient.getEmail() == null) {
-            throw new PatientNotFoundException();
-        }
-    }
 
     public void updatePasswordPatient(String email, String password){
         Patient patients = getPatientByEmail(email).orElseThrow(PatientNotFoundException::new);
