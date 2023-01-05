@@ -6,20 +6,16 @@ import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.repository.PatientRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class PatientService {
 
-
     private final PatientRepositoryImpl patientRepository;
 
-
     public List<Patient> getPatients() {
-       return patientRepository.findAll();
+        return patientRepository.findAll();
     }
 
     public Patient getPatient(String email) {
@@ -27,10 +23,7 @@ public class PatientService {
     }
 
     public void addPatient(Patient patient) {
-        Optional<Patient> existingPatient =patientRepository.findByEmail(patient.getEmail());
-        if (existingPatient.isPresent()) {
-            throw new PatientAlreadyExistsException();
-        }
+        patientRepository.findByEmail(patient.getEmail()).orElseThrow(PatientAlreadyExistsException::new);
         if (patient.getEmail() == null) {
             throw new IllegalArgumentException("Invalid patient data");
         }
@@ -41,7 +34,7 @@ public class PatientService {
     }
 
     public void updatePatient(Patient patient, String email) {
-        Patient patientData = patientRepository.findByEmail(email)
+        patientRepository.findByEmail(email)
                 .orElseThrow((PatientNotFoundException::new));
         patientRepository.update(email, patient);
     }

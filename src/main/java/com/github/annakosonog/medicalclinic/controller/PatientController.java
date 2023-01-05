@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,7 +32,6 @@ public class PatientController {
     public ResponseEntity<Patient> getPatient(@PathVariable String email) {
         return ResponseEntity.ok(service.getPatient(email));
     }
-
 
     @PostMapping
     public ResponseEntity<String> addPatient(@RequestBody Patient patient) {
@@ -58,6 +56,4 @@ public class PatientController {
         service.updatePasswordPatient(email, password);
         return ResponseEntity.ok("Password changed successfully");
     }
-
-
 }

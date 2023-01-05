@@ -11,7 +11,7 @@ public interface PatientRepository  {
 
     Optional<Patient> findByEmail(String email);
 
-    void save(Patient patient);
+    void addPatient(Patient patient);
 
     void delete(String email);
 
