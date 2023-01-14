@@ -24,7 +24,7 @@ public class PatientRepositoryImpl implements PatientRepository {
     }
 
     @Override
-    public void addPatient(Patient patient){
+    public void addPatient(Patient patient) {
         patients.add(patient);
     }
 

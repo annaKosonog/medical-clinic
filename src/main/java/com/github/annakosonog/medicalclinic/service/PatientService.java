@@ -7,6 +7,7 @@ import com.github.annakosonog.medicalclinic.repository.PatientRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -23,13 +24,19 @@ public class PatientService {
     }
 
     public void addPatient(Patient patient) {
-        patientRepository.findByEmail(patient.getEmail()).orElseThrow(PatientAlreadyExistsException::new);
+        Optional<Patient> existingPatient = patientRepository.findByEmail(patient.getEmail());
+        if (existingPatient.isPresent()) {
+            throw new PatientAlreadyExistsException();
+        }
         if (patient.getEmail() == null) {
             throw new IllegalArgumentException("Invalid patient data");
         }
+        patientRepository.addPatient(patient);
     }
 
     public void deletePatient(String email) {
+        patientRepository.findByEmail(email)
+                .orElseThrow(PatientNotFoundException::new);
         patientRepository.delete(email);
     }
 
