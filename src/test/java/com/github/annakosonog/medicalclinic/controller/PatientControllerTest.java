@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
@@ -53,7 +54,7 @@ class PatientControllerTest {
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-        mockMvc.perform(MockMvcRequestBuilders.get(PATIENTS_PATH))
+         mockMvc.perform(MockMvcRequestBuilders.get(PATIENTS_PATH))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).isArray())
@@ -105,16 +106,18 @@ class PatientControllerTest {
     }
 
     @Test
-    void addPatientThrowIllegalArgumentException() throws Exception {
+    void addPatientThrowPatientException() throws Exception {
         Patient patient = createPatient();
+        Patient patient2 = createPatient();
         patientController.addPatient(patient);
-        patient.setEmail(null);
+        patient2.setEmail(null);
 
         mockMvc.perform(MockMvcRequestBuilders.post(PATIENTS_PATH)
-                .contentType(json(patient))
+                .content(json(patient2))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ROOT_PATH).value("Invalid patient data"));
     }
 
     @Test

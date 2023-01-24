@@ -1,6 +1,7 @@
 package com.github.annakosonog.medicalclinic.service;
 
 import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.PatientException;
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.repository.PatientRepositoryImpl;
@@ -30,7 +31,7 @@ public class PatientService {
             throw new PatientAlreadyExistsException();
         }
         if (patient.getEmail() == null) {
-            throw new IllegalArgumentException("Invalid patient data");
+            throw new PatientException("Invalid patient data");
         }
         patientRepository.addPatient(patient);
     }
