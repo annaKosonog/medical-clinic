@@ -1,5 +1,6 @@
 package com.github.annakosonog.medicalclinic.service;
 
+import com.github.annakosonog.medicalclinic.exception.InvalidPatientDataException;
 import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
 import com.github.annakosonog.medicalclinic.exception.PatientException;
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
@@ -43,14 +44,27 @@ public class PatientService {
     }
 
     public void updatePatient(Patient patient, String email) {
-        patientRepository.findByEmail(email)
+       final Patient entity = patientRepository.findByEmail(email)
                 .orElseThrow((PatientNotFoundException::new));
+        if (!entity.getIdCardNo().equals(patient.getIdCardNo())) {
+            throw new PatientException("Do not change card number");
+        }
+        if (!isValid(patient)) {
+            throw new InvalidPatientDataException("Invalid patient data");
+        }
         patientRepository.update(email, patient);
     }
 
     public void updatePasswordPatient(String email, String password) {
-        patientRepository.findByEmail(email)
+         patientRepository.findByEmail(email)
                 .orElseThrow(PatientNotFoundException::new);
-        patientRepository.updatePassword(email, password);
+        if(password.equals("null")){
+            throw new InvalidPatientDataException("Invalid patient data");
+        }
+    }
+
+    private boolean isValid(Patient patient) {
+        return patient.getIdCardNo() != null && patient.getEmail() != null && patient.getFirstName() != null && patient.getLastName() != null
+                && patient.getNumberPhone() != null && patient.getPassword() != null && patient.getBirthday() != null;
     }
 }

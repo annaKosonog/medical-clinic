@@ -20,9 +20,9 @@ public class Patient {
 
     private String email;
     private String password;
-    private long idCardNo;
+    private Long idCardNo;
     private String firstName;
     private String lastName;
-    private int numberPhone;
+    private Integer numberPhone;
     private LocalDate birthday;
 }
