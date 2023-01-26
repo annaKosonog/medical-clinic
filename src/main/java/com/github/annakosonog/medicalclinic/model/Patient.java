@@ -18,7 +18,6 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class Patient {
 
-
     private String email;
     private String password;
     private Long idCardNo;

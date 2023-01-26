@@ -58,10 +58,9 @@ public class PatientService {
     public void updatePasswordPatient(String email, String password) {
          patientRepository.findByEmail(email)
                 .orElseThrow(PatientNotFoundException::new);
-        if(password == null){
+        if(password.equals("null")){
             throw new InvalidPatientDataException("Invalid patient data");
         }
-        patientRepository.updatePassword(email, password);
     }
 
     private boolean isValid(Patient patient) {
