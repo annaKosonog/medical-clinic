@@ -5,6 +5,7 @@ import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsExcept
 import com.github.annakosonog.medicalclinic.exception.PatientException;
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Patient;
+import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.repository.PatientRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class PatientService {
     }
 
     public void updatePatient(Patient patient, String email) {
-       final Patient entity = patientRepository.findByEmail(email)
+        final Patient entity = patientRepository.findByEmail(email)
                 .orElseThrow((PatientNotFoundException::new));
         if (!entity.getIdCardNo().equals(patient.getIdCardNo())) {
             throw new PatientException("Do not change card number");
@@ -56,10 +57,10 @@ public class PatientService {
     }
 
     public void updatePasswordPatient(String email, String password) {
-         patientRepository.findByEmail(email)
+        patientRepository.findByEmail(email)
                 .orElseThrow(PatientNotFoundException::new);
-        if(password.equals("null")){
-            throw new InvalidPatientDataException("Invalid patient data");
+        if (password == null) {
+            throw new NullPointerException("Password not be null");
         }
     }
 

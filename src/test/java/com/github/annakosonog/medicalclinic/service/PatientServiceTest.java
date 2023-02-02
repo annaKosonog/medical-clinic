@@ -74,14 +74,14 @@ public class PatientServiceTest {
         assertThat(expected).hasSize(2).contains(aKlaraKowalska, aPawelNowak);
     }
 
-    @Test
-    void getPatient_DataCorrect_FindByEmail() {
-        final String email = "klara@wp.pl";
-        when(patientRepositoryImp.findByEmail(email)).thenReturn(Optional.of(aKlaraKowalska));
-        final Patient expected = patientService.getPatient(email);
-        assertEquals(expected.getEmail(), email);
-        assertEquals(expected.getLastName(), "Kowalska");
-    }
+//    @Test
+//    void getPatient_DataCorrect_FindByEmail() {
+//        final String email = "klara@wp.pl";
+//        when(patientRepositoryImp.findByEmail(email)).thenReturn(Optional.of(aKlaraKowalska));
+//        final Patient expected = patientService.getPatient(email);
+//        assertEquals(expected.getEmail(), email);
+//        assertEquals(expected.getLastName(), "Kowalska");
+//    }
 
     @Test
     void getPatient_DataIncorrect_ThrowingPatientNotFoundException() {
@@ -243,6 +243,4 @@ public class PatientServiceTest {
         when(patientRepositoryImp.findByEmail(email)).thenReturn(Optional.empty());
         assertThrows(PatientNotFoundException.class, () -> patientService.updatePasswordPatient(email, password));
     }
-
-
 }

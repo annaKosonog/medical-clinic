@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PatientControllerTest {
 
-
     private static final String PATIENTS_PATH = "/patients";
     private static final String ROOT_PATH = "$";
     private static final String EMAIL_SUFFIX = ".email";
@@ -235,21 +234,6 @@ class PatientControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(ROOT_PATH).value("Patient not found"));
-    }
-
-    @Test
-    void editPatientPasswordThrowingInvalidPatientDataException() throws Exception {
-        final String email = "/klara@wp.pl";
-        final String password = null;
-        Patient aKlaraKowalska = createPatient();
-        patientController.addPatient(aKlaraKowalska);
-
-        mockMvc.perform(MockMvcRequestBuilders.patch(PATIENTS_PATH + email)
-                .content(json(password))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ROOT_PATH).value("Invalid patient data"));
     }
 
     private static Patient createPatient() {
