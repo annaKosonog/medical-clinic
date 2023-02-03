@@ -4,27 +4,36 @@ import com.github.annakosonog.medicalclinic.exception.InvalidPatientDataExceptio
 import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
 import com.github.annakosonog.medicalclinic.exception.PatientException;
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
+import com.github.annakosonog.medicalclinic.mapper.PatientMapperImpl;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.repository.PatientRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class PatientService {
 
     private final PatientRepositoryImpl patientRepository;
+    private final PatientMapperImpl patientMapper;
 
     public List<Patient> getPatients() {
         return patientRepository.findAll();
     }
 
-    public Patient getPatient(String email) {
-        return patientRepository.findByEmail(email).orElseThrow(PatientNotFoundException::new);
+    public List<PatientDTO> getPatientsDto() {
+        return getPatients().stream()
+                .map(patientMapper::patientToPatientDto)
+                .collect(Collectors.toList());
+    }
+
+    public PatientDTO getPatient(String email) {
+        Patient patient = patientRepository.findByEmail(email).orElseThrow(PatientNotFoundException::new);
+        return patientMapper.patientToPatientDto(patient);
     }
 
     public void addPatient(Patient patient) {
@@ -62,6 +71,7 @@ public class PatientService {
         if (password == null) {
             throw new NullPointerException("Password not be null");
         }
+        patientRepository.updatePassword(email, password);
     }
 
     private boolean isValid(Patient patient) {

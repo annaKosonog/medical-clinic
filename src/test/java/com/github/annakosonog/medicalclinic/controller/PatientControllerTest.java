@@ -2,6 +2,7 @@ package com.github.annakosonog.medicalclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
+import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,8 +44,8 @@ class PatientControllerTest {
     void setup() {
         Optional.ofNullable(patientController.getAllPatients())
                 .map(ResponseEntity::getBody)
-                .filter(patients -> patients.size() > 0)
-                .ifPresent(patients -> patients.forEach(this::removePatient));
+                .filter(patientsDto -> patientsDto.size() > 0)
+                .ifPresent(patientsDto -> patientsDto.forEach(this::removePatient));
     }
 
     @Test
@@ -84,9 +87,9 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).isString())
                 .andExpect(jsonPath(ROOT_PATH).value("Patient was added successfully"));
 
-        Patient patient1 = patientController.getPatient("klara@wp.pl").getBody();
-        assertEquals(patient1.getEmail(), aKlaraKowalska.getEmail());
-        assertEquals(patient1.getFirstName(), aKlaraKowalska.getFirstName());
+        PatientDTO patientDTO = patientController.getPatient("klara@wp.pl").getBody();
+        assertEquals(patientDTO.getEmail(), aKlaraKowalska.getEmail());
+        assertEquals(patientDTO.getFirstName(), aKlaraKowalska.getFirstName());
     }
 
     @Test
@@ -143,9 +146,9 @@ class PatientControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).value("Patient was update successfully"));
 
-        Patient patient = patientController.getPatient("laura@wp.pl").getBody();
-        assertEquals(patient.getFirstName(), "Laura");
-        assertEquals(patient.getEmail(), "laura@wp.pl");
+        PatientDTO patientDto = patientController.getPatient("laura@wp.pl").getBody();
+        assertEquals(patientDto.getFirstName(), "Laura");
+        assertEquals(patientDto.getEmail(), "laura@wp.pl");
     }
 
     @Test
@@ -214,11 +217,6 @@ class PatientControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).value("Password changed successfully"));
-
-        Patient actual = patientController.getPatient("klara@wp.pl").getBody();
-        assertEquals(json(password), actual.getPassword());
-        assertEquals(actual.getEmail(), "klara@wp.pl");
-        assertEquals(actual.getNumberPhone(), 698247158);
     }
 
     @Test
@@ -260,7 +258,7 @@ class PatientControllerTest {
                 .build();
     }
 
-    private void removePatient(Patient patient) {
+    private void removePatient(PatientDTO patient) {
         patientController.deletePatient(patient.getEmail());
     }
 
