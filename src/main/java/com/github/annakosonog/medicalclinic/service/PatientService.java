@@ -60,10 +60,14 @@ public class PatientService {
         if (!entity.getIdCardNo().equals(patient.getIdCardNo())) {
             throw new PatientException("Do not change card number");
         }
+        if(patient.getId() == null){
+            patient.setId(entity.getId());
+        }
         if (!isValid(patient)) {
             throw new InvalidPatientDataException("Invalid patient data");
         }
-        patientRepository.save(entity);
+
+        patientRepository.save(patient);
     }
 
     public void updatePasswordPatient(String email, String password) {
