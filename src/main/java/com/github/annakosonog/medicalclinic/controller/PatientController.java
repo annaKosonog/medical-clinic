@@ -1,6 +1,7 @@
 package com.github.annakosonog.medicalclinic.controller;
 
 import com.github.annakosonog.medicalclinic.model.Patient;
+import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,12 +24,12 @@ public class PatientController {
     private final PatientService service;
 
     @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients() {
-        return ResponseEntity.ok(service.getPatients());
+    public ResponseEntity<List<PatientDTO>> getAllPatients() {
+        return ResponseEntity.ok(service.getPatientsDto());
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<Patient> getPatient(@PathVariable String email) {
+    public ResponseEntity<PatientDTO> getPatient(@PathVariable String email) {
         return ResponseEntity.ok(service.getPatient(email));
     }
 

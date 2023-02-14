@@ -2,6 +2,7 @@ package com.github.annakosonog.medicalclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
+import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class PatientControllerTest {
-
 
     private static final String PATIENTS_PATH = "/patients";
     private static final String ROOT_PATH = "$";
@@ -45,8 +44,8 @@ class PatientControllerTest {
     void setup() {
         Optional.ofNullable(patientController.getAllPatients())
                 .map(ResponseEntity::getBody)
-                .filter(patients -> patients.size() > 0)
-                .ifPresent(patients -> patients.forEach(this::removePatient));
+                .filter(patientsDto -> patientsDto.size() > 0)
+                .ifPresent(patientsDto -> patientsDto.forEach(this::removePatient));
     }
 
     @Test
@@ -54,20 +53,21 @@ class PatientControllerTest {
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-         mockMvc.perform(MockMvcRequestBuilders.get(PATIENTS_PATH))
+        mockMvc.perform(MockMvcRequestBuilders.get(PATIENTS_PATH))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).isArray())
                 .andExpect(jsonPath("$[0].email").value("klara@wp.pl"))
-                .andExpect(jsonPath("$[0].password").value("klara123"));
+                .andExpect(jsonPath("$[0].firstName").value("Klara"));
     }
 
     @Test
     void getPatient() throws Exception {
+        final String email = "/klara@wp.pl";
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/patients/klara@wp.pl"))
+        mockMvc.perform(MockMvcRequestBuilders.get(PATIENTS_PATH + email))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).isNotEmpty())
@@ -87,9 +87,9 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).isString())
                 .andExpect(jsonPath(ROOT_PATH).value("Patient was added successfully"));
 
-        Patient patient1 = patientController.getPatient("klara@wp.pl").getBody();
-        assertEquals(patient1.getEmail(), aKlaraKowalska.getEmail());
-        assertEquals(patient1.getFirstName(), aKlaraKowalska.getFirstName());
+        PatientDTO patientDTO = patientController.getPatient("klara@wp.pl").getBody();
+        assertEquals(patientDTO.getEmail(), aKlaraKowalska.getEmail());
+        assertEquals(patientDTO.getFirstName(), aKlaraKowalska.getFirstName());
     }
 
     @Test
@@ -122,10 +122,11 @@ class PatientControllerTest {
 
     @Test
     void deletePatient() throws Exception {
+        final String email = "/klara@wp.pl";
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete(PATIENTS_PATH + "/klara@wp.pl"))
+        mockMvc.perform(MockMvcRequestBuilders.delete(PATIENTS_PATH + email))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(EMAIL_PATH).doesNotExist())
@@ -134,23 +135,25 @@ class PatientControllerTest {
 
     @Test
     void updatePatient() throws Exception {
+        final String email = "/klara@wp.pl";
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-        mockMvc.perform(MockMvcRequestBuilders.put(PATIENTS_PATH + "/klara@wp.pl")
+        mockMvc.perform(MockMvcRequestBuilders.put(PATIENTS_PATH + email)
                 .content(json(updateKlara()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).value("Patient was update successfully"));
 
-        Patient patient = patientController.getPatient("laura@wp.pl").getBody();
-        assertEquals(patient.getFirstName(), "Laura");
-        assertEquals(patient.getEmail(), "laura@wp.pl");
+        PatientDTO patientDto = patientController.getPatient("laura@wp.pl").getBody();
+        assertEquals(patientDto.getFirstName(), "Laura");
+        assertEquals(patientDto.getEmail(), "laura@wp.pl");
     }
 
     @Test
     void updatePatientThrowPatientNotFoundException() throws Exception {
+        final String email = "/email";
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
@@ -158,7 +161,7 @@ class PatientControllerTest {
         aKlaraKowalska.setIdCardNo(1255578L);
         aKlaraKowalska.setNumberPhone(517358158);
 
-        mockMvc.perform(MockMvcRequestBuilders.put(PATIENTS_PATH + "/email")
+        mockMvc.perform(MockMvcRequestBuilders.put(PATIENTS_PATH + email)
                 .content(json(aKlaraKowalska))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -167,32 +170,64 @@ class PatientControllerTest {
     }
 
     @Test
-    void editPatientPassword() throws Exception {
+    void updatePatientThrowingPatientException() throws Exception {
+        final String email = "/klara@wp.pl";
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-        String password = "klara124";
+        Patient editKlara = updateKlara();
+        editKlara.setIdCardNo(1234L);
 
-        mockMvc.perform(MockMvcRequestBuilders.patch(PATIENTS_PATH + "/klara@wp.pl")
+        mockMvc.perform(MockMvcRequestBuilders.put(PATIENTS_PATH + email)
+                .content(json(editKlara))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ROOT_PATH).value("Do not change card number"));
+    }
+
+    @Test
+    void updatePatientThrowingInvalidPatientDataException() throws Exception {
+        final String email = "/klara@wp.pl";
+        Patient aKlaraKowalska = createPatient();
+        patientController.addPatient(aKlaraKowalska);
+
+        Patient editKlara = updateKlara();
+        editKlara.setFirstName(null);
+        editKlara.setPassword(null);
+        editKlara.setBirthday(null);
+
+        mockMvc.perform(MockMvcRequestBuilders.put(PATIENTS_PATH + email)
+                .content(json(editKlara))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ROOT_PATH).value("Invalid patient data"));
+    }
+
+    @Test
+    void editPatientPassword() throws Exception {
+        final String email = "/klara@wp.pl";
+        final String password = "klara124";
+        Patient aKlaraKowalska = createPatient();
+        patientController.addPatient(aKlaraKowalska);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch(PATIENTS_PATH + email)
                 .content(json(password))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).value("Password changed successfully"));
-
-        Patient actual = patientController.getPatient("klara@wp.pl").getBody();
-        assertEquals(json(password), actual.getPassword());
-        assertEquals(actual.getEmail(), "klara@wp.pl");
-        assertEquals(actual.getNumberPhone(), 698247158);
     }
 
     @Test
     void editPatientPasswordThrowPatientNotFoundException() throws Exception {
         final String password = "klara124";
+        final String email = "/email";
         Patient aKlaraKowalska = createPatient();
         patientController.addPatient(aKlaraKowalska);
 
-        mockMvc.perform(MockMvcRequestBuilders.patch(PATIENTS_PATH + "/email")
+        mockMvc.perform(MockMvcRequestBuilders.patch(PATIENTS_PATH + email)
                 .content(json(password))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -200,8 +235,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Patient not found"));
     }
 
-
-    public static Patient createPatient() {
+    private static Patient createPatient() {
         return Patient.builder()
                 .email("klara@wp.pl")
                 .password("klara123")
@@ -213,11 +247,11 @@ class PatientControllerTest {
                 .build();
     }
 
-    public static Patient updateKlara() {
+    private static Patient updateKlara() {
         return Patient.builder()
                 .email("laura@wp.pl")
                 .password("laura124")
-                .idCardNo(1255578L)
+                .idCardNo(1234578L)
                 .firstName("Laura")
                 .lastName("Kowalska")
                 .numberPhone(517358158)
@@ -225,7 +259,7 @@ class PatientControllerTest {
                 .build();
     }
 
-    private void removePatient(Patient patient) {
+    private void removePatient(PatientDTO patient) {
         patientController.deletePatient(patient.getEmail());
     }
 
