@@ -9,6 +9,7 @@ import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Patient> getPatients() {
         return patientRepository.findAll();
@@ -44,6 +46,7 @@ public class PatientService {
         if (patient.getEmail() == null) {
             throw new PatientException("Invalid patient data");
         }
+        patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         patientRepository.save(patient);
     }
 
@@ -76,7 +79,7 @@ public class PatientService {
         if (password == null) {
             throw new NullPointerException("Password not be null");
         }
-
+        patient.setPassword(password);
         patientRepository.save(patient);
     }
 
