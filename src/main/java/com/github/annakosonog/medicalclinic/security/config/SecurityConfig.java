@@ -4,9 +4,12 @@ import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.repository.PatientRepository;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,8 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collections;
-
+@Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -37,24 +39,25 @@ public class SecurityConfig {
         return http.csrf().disable()
                 .httpBasic()
                 .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/patients").anonymous()
-                .antMatchers("/h2-console").authenticated()
-                .antMatchers(HttpMethod.GET, "/patients").authenticated()
-                .antMatchers("/patients/{email}").authenticated()
-                .anyRequest().authenticated()
+                .anyRequest().hasRole("PATIENT")
                 .and()
                 .build();
     }
 
 
     private UserDetails build(Patient patient) {
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(patient.getRole().getAuthorityName());
         return User.builder()
                 .username(patient.getEmail())
                 .password(patient.getPassword())
-                .authorities(Collections.emptyList())
+                .authorities(simpleGrantedAuthority)
                 .build();
     }
 }
