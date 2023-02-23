@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -47,7 +48,7 @@ class PatientControllerTest {
                 .filter(patientsDto -> patientsDto.size() > 0)
                 .ifPresent(patientsDto -> patientsDto.forEach(this::removePatient));
     }
-
+    @WithMockUser(roles = "PATIENT")
     @Test
     void getAllPatients() throws Exception {
         Patient aKlaraKowalska = createPatient();
@@ -60,7 +61,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath("$[0].email").value("klara@wp.pl"))
                 .andExpect(jsonPath("$[0].firstName").value("Klara"));
     }
-
+    @WithMockUser(roles = "PATIENT")
     @Test
     void getPatient() throws Exception {
         final String email = "/klara@wp.pl";
@@ -120,6 +121,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Invalid patient data"));
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void deletePatient() throws Exception {
         final String email = "/klara@wp.pl";
@@ -133,6 +135,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Patient was deleted successfully"));
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void updatePatient() throws Exception {
         final String email = "/klara@wp.pl";
@@ -151,6 +154,7 @@ class PatientControllerTest {
         assertEquals(patientDto.getEmail(), "laura@wp.pl");
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void updatePatientThrowPatientNotFoundException() throws Exception {
         final String email = "/email";
@@ -169,6 +173,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Patient not found"));
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void updatePatientThrowingPatientException() throws Exception {
         final String email = "/klara@wp.pl";
@@ -186,6 +191,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Do not change card number"));
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void updatePatientThrowingInvalidPatientDataException() throws Exception {
         final String email = "/klara@wp.pl";
@@ -205,6 +211,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Invalid patient data"));
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void editPatientPassword() throws Exception {
         final String email = "/klara@wp.pl";
@@ -220,6 +227,7 @@ class PatientControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Password changed successfully"));
     }
 
+    @WithMockUser(roles = "PATIENT")
     @Test
     void editPatientPasswordThrowPatientNotFoundException() throws Exception {
         final String password = "klara124";
