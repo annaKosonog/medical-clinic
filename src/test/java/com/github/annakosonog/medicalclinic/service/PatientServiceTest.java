@@ -1,5 +1,4 @@
 package com.github.annakosonog.medicalclinic.service;
-
 import com.github.annakosonog.medicalclinic.exception.InvalidPatientDataException;
 import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
 import com.github.annakosonog.medicalclinic.exception.PatientException;
@@ -16,11 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,11 +37,13 @@ public class PatientServiceTest {
     private PatientRepository patientRepository;
 
     @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
     private PatientMapper patientMapper;
 
     @InjectMocks
     private PatientService patientService;
-
     private Patient beforeSaveAKlaraKowalska;
     private Patient savedAKlaraKowalska;
     private Patient aPawelNowak;
@@ -124,6 +124,7 @@ public class PatientServiceTest {
     @Test
     void addPatient_DataCorrect_PatientSaved() {
         when(patientRepository.findByEmail("pawel")).thenReturn(Optional.empty());
+        when(patientRepository.save(any(Patient.class))).thenReturn(aPawelNowak);
         patientService.addPatient(aPawelNowak);
         verify(patientRepository, times(1)).save(any(Patient.class));
     }

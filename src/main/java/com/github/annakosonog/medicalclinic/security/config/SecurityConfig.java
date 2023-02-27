@@ -1,5 +1,4 @@
 package com.github.annakosonog.medicalclinic.security.config;
-
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.repository.PatientRepository;
@@ -20,7 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -50,7 +48,6 @@ public class SecurityConfig {
                 .and()
                 .build();
     }
-
 
     private UserDetails build(Patient patient) {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(patient.getRole().getAuthorityName());
