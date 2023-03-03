@@ -1,5 +1,4 @@
 package com.github.annakosonog.medicalclinic.model;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

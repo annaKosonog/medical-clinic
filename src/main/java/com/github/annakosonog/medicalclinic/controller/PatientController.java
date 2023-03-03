@@ -1,5 +1,4 @@
 package com.github.annakosonog.medicalclinic.controller;
-
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.service.PatientService;

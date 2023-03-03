@@ -1,7 +1,8 @@
 package com.github.annakosonog.medicalclinic.security.config;
 import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
-import com.github.annakosonog.medicalclinic.model.Patient;
-import com.github.annakosonog.medicalclinic.repository.PatientRepository;
+import com.github.annakosonog.medicalclinic.model.Role;
+import com.github.annakosonog.medicalclinic.model.UserData;
+import com.github.annakosonog.medicalclinic.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,7 +27,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PatientRepository repository) {
+    public UserDetailsService userDetailsService(UserRepository repository) {
         return username -> repository.findByEmail(username)
                 .map(this::build)
                 .orElseThrow(PatientNotFoundException::new);
@@ -43,17 +44,19 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/patients").anonymous()
-                .anyRequest().hasRole("PATIENT")
-                .and()
-                .build();
+                .antMatchers(HttpMethod.POST,"/patients").anonymous()
+                .antMatchers(HttpMethod.GET,"/patients").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers("/h2-console/**").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers("/patients/**").hasRole(Role.PATIENT.name().toUpperCase())
+                .anyRequest().denyAll()
+                .and().build();
     }
 
-    private UserDetails build(Patient patient) {
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(patient.getRole().getAuthorityName());
+    private UserDetails build(UserData userData) {
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userData.getRole().getAuthorityName());
         return User.builder()
-                .username(patient.getEmail())
-                .password(patient.getPassword())
+                .username(userData.getEmail())
+                .password(userData.getPassword())
                 .authorities(simpleGrantedAuthority)
                 .build();
     }

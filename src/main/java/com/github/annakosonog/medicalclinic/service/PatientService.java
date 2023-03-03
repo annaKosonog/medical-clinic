@@ -1,5 +1,4 @@
 package com.github.annakosonog.medicalclinic.service;
-
 import com.github.annakosonog.medicalclinic.exception.InvalidPatientDataException;
 import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
 import com.github.annakosonog.medicalclinic.exception.PatientException;
@@ -63,13 +62,12 @@ public class PatientService {
         if (!entity.getIdCardNo().equals(patient.getIdCardNo())) {
             throw new PatientException("Do not change card number");
         }
-        if(patient.getId() == null){
+        if (patient.getId() == null) {
             patient.setId(entity.getId());
         }
         if (!isValid(patient)) {
             throw new InvalidPatientDataException("Invalid patient data");
         }
-
         patientRepository.save(patient);
     }
 

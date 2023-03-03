@@ -46,7 +46,7 @@ class PatientControllerTest {
                 .ifPresent(patientsDto -> patientsDto.forEach(this::removePatient));
     }
 
-    @WithMockUser(roles = "PATIENT")
+    @WithMockUser(roles = "ADMIN")
     @Test
     void getAllPatients() throws Exception {
         Patient aKlaraKowalska = createPatient();

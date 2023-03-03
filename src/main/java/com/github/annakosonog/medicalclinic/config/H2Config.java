@@ -1,9 +1,7 @@
 package com.github.annakosonog.medicalclinic.config;
-
 import org.h2.tools.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.sql.SQLException;
 
 @Configuration
