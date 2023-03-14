@@ -11,5 +11,4 @@ import javax.persistence.Entity;
 @Setter
 @Entity
 public class Admin extends UserData {
-
 }
