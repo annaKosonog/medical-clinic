@@ -1,8 +1,9 @@
 package com.github.annakosonog.medicalclinic.service;
-import com.github.annakosonog.medicalclinic.exception.InvalidPatientDataException;
-import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
-import com.github.annakosonog.medicalclinic.exception.PatientException;
-import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
+
+import com.github.annakosonog.medicalclinic.exception.patient.InvalidPatientDataException;
+import com.github.annakosonog.medicalclinic.exception.patient.PatientAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.patient.PatientException;
+import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.mapper.PatientMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
@@ -16,9 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,6 +47,7 @@ public class PatientServiceTest {
 
     @InjectMocks
     private PatientService patientService;
+
     private Patient beforeSaveAKlaraKowalska;
     private Patient savedAKlaraKowalska;
     private Patient aPawelNowak;

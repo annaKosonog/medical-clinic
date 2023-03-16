@@ -1,8 +1,8 @@
 package com.github.annakosonog.medicalclinic.service;
-import com.github.annakosonog.medicalclinic.exception.InvalidPatientDataException;
-import com.github.annakosonog.medicalclinic.exception.PatientAlreadyExistsException;
-import com.github.annakosonog.medicalclinic.exception.PatientException;
-import com.github.annakosonog.medicalclinic.exception.PatientNotFoundException;
+import com.github.annakosonog.medicalclinic.exception.patient.InvalidPatientDataException;
+import com.github.annakosonog.medicalclinic.exception.patient.PatientAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.patient.PatientException;
+import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.mapper.PatientMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;

@@ -1,4 +1,4 @@
-package com.github.annakosonog.medicalclinic.exception;
+package com.github.annakosonog.medicalclinic.exception.patient;
 
 public class PatientNotFoundException extends PatientException {
 
