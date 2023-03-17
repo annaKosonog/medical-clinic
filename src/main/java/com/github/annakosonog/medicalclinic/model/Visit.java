@@ -27,5 +27,4 @@ public class Visit {
     private LocalDateTime term;
     @ManyToOne
     private Patient patient;
-
 }

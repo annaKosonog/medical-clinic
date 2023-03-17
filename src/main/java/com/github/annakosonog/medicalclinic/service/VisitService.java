@@ -1,7 +1,7 @@
 package com.github.annakosonog.medicalclinic.service;
 import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.exception.visit.IncorrectVisitException;
-import com.github.annakosonog.medicalclinic.exception.visit.PatientVisitIsUnavaible;
+import com.github.annakosonog.medicalclinic.exception.visit.PatientVisitIsUnavailable;
 import com.github.annakosonog.medicalclinic.exception.visit.VisitNotFoundException;
 import com.github.annakosonog.medicalclinic.mapper.VisitMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
@@ -44,7 +44,7 @@ public class VisitService {
         Visit visit = visitRepository.findById(id).orElseThrow(VisitNotFoundException::new);
 
         if (visit.getPatient() != null) {
-            throw new PatientVisitIsUnavaible("Date already taken");
+            throw new PatientVisitIsUnavailable ("Date already taken");
         }
 
         if (visit.getTerm().isBefore(LocalDateTime.now())) {
