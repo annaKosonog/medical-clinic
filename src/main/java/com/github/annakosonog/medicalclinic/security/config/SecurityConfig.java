@@ -1,4 +1,5 @@
 package com.github.annakosonog.medicalclinic.security.config;
+
 import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Role;
 import com.github.annakosonog.medicalclinic.model.UserData;
@@ -44,8 +45,8 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/patients").anonymous()
-                .antMatchers(HttpMethod.GET,"/patients").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers(HttpMethod.POST, "/patients").anonymous()
+                .antMatchers(HttpMethod.GET, "/patients").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers("/h2-console/**").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers("/patients/**").hasRole(Role.PATIENT.name().toUpperCase())
                 .antMatchers(HttpMethod.POST, "/visits").hasRole(Role.ADMIN.name().toUpperCase())

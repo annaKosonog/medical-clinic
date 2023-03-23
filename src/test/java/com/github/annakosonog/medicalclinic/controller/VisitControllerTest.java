@@ -1,9 +1,8 @@
 package com.github.annakosonog.medicalclinic.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
-import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.model.Visit;
-import com.github.annakosonog.medicalclinic.model.VisitDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -94,12 +93,12 @@ class VisitControllerTest {
     @Test
     void appointmentOfThePatientWithDateCorrect() throws Exception {
         final long id = 1L;
-        PatientDTO patientDTO = buildPatientDto();
-        visitController.addNewVisit(createLocalDateTime());
+        final String email = "klara@wp.pl";
         patientController.addPatient(createPatient());
+        visitController.addNewVisit(createLocalDateTime());
 
         mockMvc.perform(MockMvcRequestBuilders.put(VISITS_PATH + "/" + id)
-                .content(json(patientDTO))
+                .content(email)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -110,11 +109,11 @@ class VisitControllerTest {
     @Test
     void appointmentOfThePatientThrowVisitNotFoundException() throws Exception {
         final long id = 5L;
-        PatientDTO patientDTO = buildPatientDto();
+        final String email = "klara@wp.pl";
 
         visitController.addNewVisit(createLocalDateTime());
         mockMvc.perform(MockMvcRequestBuilders.put(VISITS_PATH + "/" + id)
-                .content(json(patientDTO))
+                .content(email)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -125,13 +124,13 @@ class VisitControllerTest {
     @Test
     void appointmentOfThePatientThrowPatientVisitIsUnavailable() throws Exception {
         final long id = 1L;
-        PatientDTO patientDTO = aLauraKowalskaDto();
+        final String email = "klara@wp.pl";
         patientController.addPatient(createPatient());
         visitController.addNewVisit(createLocalDateTime());
-        visitController.appointmentOfThePatient(id, buildPatientDto());
+        visitController.appointmentOfThePatient(id, email);
 
         mockMvc.perform(MockMvcRequestBuilders.put(VISITS_PATH + "/" + id)
-                .content(json(patientDTO))
+                .content(email)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -142,14 +141,47 @@ class VisitControllerTest {
     @Test
     void appointmentOfThePatientThrowPatientNotFoundException() throws Exception {
         final long id = 1L;
-        PatientDTO patientDTO = buildPatientDto();
+        final String email = "test@wp.pl";
         visitController.addNewVisit(createLocalDateTime());
 
         mockMvc.perform(MockMvcRequestBuilders.put(VISITS_PATH + "/" + id)
-                .content(json(patientDTO))
+                .content(email)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ROOT_PATH).value("Patient not found"));
+    }
+
+    @WithMockUser(roles = "PATIENT")
+    @Test
+    void findAllVisitPatientDataCorrect() throws Exception {
+        final long id = 1L;
+        final String email = "klara@wp.pl";
+        patientController.addPatient(createPatient());
+        visitController.addNewVisit(createLocalDateTime());
+        visitController.appointmentOfThePatient(id, email);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(VISITS_PATH + "/" + email))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(ROOT_PATH).isNotEmpty())
+                .andExpect(jsonPath(ROOT_PATH).isArray())
+                .andExpect(jsonPath("$[0].patientId").value(2L));
+    }
+
+    @WithMockUser(roles = "PATIENT")
+    @Test
+    void findAllVisitPatientThrowPatientNotFoundException() throws Exception {
+        final long id = 1L;
+        final String email = "test@wp.pl";
+        patientController.addPatient(createPatient());
+        visitController.addNewVisit(createLocalDateTime());
+        visitController.appointmentOfThePatient(id, "klara@wp.pl");
+
+        mockMvc.perform(MockMvcRequestBuilders.get(VISITS_PATH + "/" + email))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(ROOT_PATH).isString())
                 .andExpect(jsonPath(ROOT_PATH).value("Patient not found"));
     }
 
@@ -167,6 +199,7 @@ class VisitControllerTest {
 
     private static Patient createPatient() {
         return Patient.builder()
+                .id(1L)
                 .email("klara@wp.pl")
                 .password("klara123")
                 .idCardNo(1234578L)
@@ -183,21 +216,5 @@ class VisitControllerTest {
                 .withMinute(15)
                 .withSecond(0)
                 .withNano(0);
-    }
-
-    private PatientDTO buildPatientDto() {
-        return PatientDTO.builder()
-                .email("klara@wp.pl")
-                .firstName("Klara")
-                .lastName("Kowalska")
-                .build();
-    }
-
-    private PatientDTO aLauraKowalskaDto() {
-        return PatientDTO.builder()
-                .email("laura@wp.pl")
-                .firstName("Laura")
-                .lastName("Kowalska")
-                .build();
     }
 }

@@ -1,4 +1,5 @@
 package com.github.annakosonog.medicalclinic.handler;
+
 import com.github.annakosonog.medicalclinic.exception.patient.PatientException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

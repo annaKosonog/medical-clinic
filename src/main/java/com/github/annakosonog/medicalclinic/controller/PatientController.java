@@ -1,4 +1,5 @@
 package com.github.annakosonog.medicalclinic.controller;
+
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.service.PatientService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RequiredArgsConstructor

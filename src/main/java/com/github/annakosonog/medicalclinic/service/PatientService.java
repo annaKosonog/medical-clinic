@@ -1,4 +1,5 @@
 package com.github.annakosonog.medicalclinic.service;
+
 import com.github.annakosonog.medicalclinic.exception.patient.InvalidPatientDataException;
 import com.github.annakosonog.medicalclinic.exception.patient.PatientAlreadyExistsException;
 import com.github.annakosonog.medicalclinic.exception.patient.PatientException;
@@ -10,6 +11,7 @@ import com.github.annakosonog.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

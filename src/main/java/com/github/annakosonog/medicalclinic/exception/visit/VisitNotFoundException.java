@@ -2,7 +2,7 @@ package com.github.annakosonog.medicalclinic.exception.visit;
 
 public class VisitNotFoundException extends VisitException {
 
-    public VisitNotFoundException(){
+    public VisitNotFoundException() {
         super("Visit not found");
     }
 }

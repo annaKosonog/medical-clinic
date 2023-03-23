@@ -1,4 +1,5 @@
 package com.github.annakosonog.medicalclinic.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
@@ -12,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
