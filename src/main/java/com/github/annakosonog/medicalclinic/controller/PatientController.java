@@ -1,6 +1,7 @@
 package com.github.annakosonog.medicalclinic.controller;
 
 import com.github.annakosonog.medicalclinic.model.Patient;
+import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,39 +22,39 @@ import java.util.List;
 @RestController
 public class PatientController {
 
-    private final PatientService service;
+    private final PatientService patientService;
 
     @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients() {
-        return ResponseEntity.ok(service.getPatients());
+    public ResponseEntity<List<PatientDTO>> getAllPatients() {
+        return ResponseEntity.ok(patientService.getPatientsDto());
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<Patient> getPatient(@PathVariable String email) {
-        return ResponseEntity.ok(service.getPatient(email));
+    public ResponseEntity<PatientDTO> getPatient(@PathVariable String email) {
+        return ResponseEntity.ok(patientService.getPatient(email));
     }
 
     @PostMapping
     public ResponseEntity<String> addPatient(@RequestBody Patient patient) {
-        service.addPatient(patient);
+        patientService.addPatient(patient);
         return ResponseEntity.ok("Patient was added successfully");
     }
 
     @DeleteMapping("/{email}")
     public ResponseEntity<String> deletePatient(@PathVariable String email) {
-        service.deletePatient(email);
+        patientService.deletePatient(email);
         return ResponseEntity.ok("Patient was deleted successfully");
     }
 
     @PutMapping("/{email}")
     public ResponseEntity<String> updatePatient(@PathVariable String email, @RequestBody Patient patient) {
-        service.updatePatient(patient, email);
+        patientService.updatePatient(patient, email);
         return ResponseEntity.ok("Patient was update successfully");
     }
 
     @PatchMapping("/{email}")
     public ResponseEntity<String> editPatientPassword(@PathVariable String email, @RequestBody String password) {
-        service.updatePasswordPatient(email, password);
+        patientService.updatePasswordPatient(email, password);
         return ResponseEntity.ok("Password changed successfully");
     }
 }
