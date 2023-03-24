@@ -7,14 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
 @EqualsAndHashCode
 @ToString
-public class PatientDTO {
+public class DoctorDto {
     private String email;
     private String firstName;
     private String lastName;
+    private Specialization specialization;
+    private List<Facility> facilities;
 }

@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/visits").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers("/visits/**").hasRole(Role.PATIENT.name().toUpperCase())
                 .antMatchers(HttpMethod.GET, "/visits").hasRole(Role.PATIENT.name().toUpperCase())
+                .antMatchers(HttpMethod.POST, "/doctors").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers(HttpMethod.GET, "/doctors").hasRole(Role.ADMIN.name().toUpperCase())
                 .anyRequest().denyAll()
                 .and().build();
     }

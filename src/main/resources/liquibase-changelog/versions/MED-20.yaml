@@ -1,0 +1,88 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: annaKosonog
+      changes:
+        - createTable:
+            tableName: doctor
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_doctor_id
+                  name: id
+                  type: int
+              - column:
+                  constraints:
+                    nullable: false
+                  name: first_name
+                  type: varchar(20)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: last_name
+                  type: varchar(25)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: specialization
+                  type: varchar(20)
+  - changeSet:
+      id: 4
+      author: annaKosonog
+      changes:
+        - createTable:
+            tableName: facility
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_facility_id
+                  name: id
+                  type: int
+              - column:
+                  name: name
+                  type: varchar(10)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: unique_facility_name
+              - column:
+                  name: city
+                  type: varchar(10)
+              - column:
+                  name: post_code
+                  type: varchar(5)
+              - column:
+                  name: street
+                  type: varchar(15)
+              - column:
+                  name: number
+                  type: varchar(4)
+              - column:
+                  name: doctor_id
+                  type: int
+  - changeSet:
+      id: 5
+      author: annaKosonog
+      changes:
+        - createTable:
+            tableName: doctor_facility
+            columns:
+              - column:
+                  name: doctor_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_doctorfac_id
+                    reference: doctor
+                    nullable: false
+              - column:
+                  name: facility_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_facilitydoc_id
+                    reference: facility
+                    nullable: false
