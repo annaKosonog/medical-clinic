@@ -1,8 +1,13 @@
 package com.github.annakosonog.medicalclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.annakosonog.medicalclinic.model.Doctor;
-import com.github.annakosonog.medicalclinic.model.Specialization;
+import com.github.annakosonog.medicalclinic.model.AssignDoctorDto;
+import com.github.annakosonog.medicalclinic.model.SampleAssignDoctorDto;
+import com.github.annakosonog.medicalclinic.model.SampleDoctor;
+import com.github.annakosonog.medicalclinic.model.SampleDoctorDto;
+import com.github.annakosonog.medicalclinic.model.SampleFacility;
+import com.github.annakosonog.medicalclinic.model.SampleFacilityDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-public class DoctorControllerTest {
+public class DoctorControllerTest implements SampleDoctor, SampleAssignDoctorDto, SampleDoctorDto, SampleFacility, SampleFacilityDto {
 
     private static final String DOCTOR_PATH = "/doctors";
     private static final String ROOT_PATH = "$";
@@ -29,16 +34,20 @@ public class DoctorControllerTest {
     private DoctorController doctorController;
 
     @Autowired
+    private FacilityController facilityController;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
     MockMvc mockMvc;
 
+
     @WithMockUser(roles = "ADMIN")
     @Test
     void addNewDoctorDataCorrect() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(DOCTOR_PATH)
-                .content(json(createANewDoctor()))
+                .content(json(aCreateDoctorAdamBeforeSave()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -47,12 +56,12 @@ public class DoctorControllerTest {
 
     @WithMockUser(roles = "ADMIN")
     @Test
-    void addNewDoctorThrowDoctorAlreadyExistsException() throws Exception {
-        final Doctor aNewDoctor = createANewDoctor();
-        doctorController.addNewDoctor(aNewDoctor);
+    void addNewDoctorThrowDataAlreadyExistsException() throws Exception {
+        final AssignDoctorDto beforeSave = aCreateDoctorAdamBeforeSave();
+        doctorController.addNewDoctor(beforeSave);
 
         mockMvc.perform(MockMvcRequestBuilders.post(DOCTOR_PATH)
-                .content(json(aNewDoctor))
+                .content(json(beforeSave))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -63,12 +72,10 @@ public class DoctorControllerTest {
     @WithMockUser(roles = "ADMIN")
     @Test
     void addNewDoctorThrowInvalidDoctorException() throws Exception {
-        Doctor aNewDoctor = createANewDoctor();
-        aNewDoctor.setFirstName(null);
-        aNewDoctor.setLastName(null);
+        final AssignDoctorDto doctorWithNull = aCreateANewDoctorWithNull();
 
         mockMvc.perform(MockMvcRequestBuilders.post(DOCTOR_PATH)
-                .content(json(aNewDoctor))
+                .content(json(doctorWithNull))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -76,11 +83,34 @@ public class DoctorControllerTest {
                 .andExpect(jsonPath(ROOT_PATH).value("Invalid doctor data"));
     }
 
+    @WithMockUser(roles = "PATIENT")
+    @Test
+    void assignDoctorToFacilityDataCorrect() throws Exception {
+        final Long doctorId = 2L;
+        final Long facilityId = 1L;
+
+
+        doctorController.addNewDoctor(aCreateDoctorPawelBeforeSave());
+        facilityController.addNewFacility(aMedicusDto());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(DOCTOR_PATH + "/" + doctorId)
+                .param("facilityId", String.valueOf(facilityId))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(ROOT_PATH).isString())
+                .andExpect(jsonPath(ROOT_PATH).value("ok"));
+    }
+
     @WithMockUser(roles = "ADMIN")
     @Test
     void getAllDoctorDataCorrect() throws Exception {
-        final Doctor aNewDoctor = createANewDoctor();
-        doctorController.addNewDoctor(aNewDoctor);
+        final long doctorId = 2L;
+        final long facilityId = 1L;
+
+        doctorController.addNewDoctor(aCreateDoctorPawelBeforeSave());
+        facilityController.addNewFacility(aMedicusDto());
+        doctorController.assignDoctorToFacility(doctorId, facilityId);
 
         mockMvc.perform(MockMvcRequestBuilders.get(DOCTOR_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -88,19 +118,8 @@ public class DoctorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(ROOT_PATH).isNotEmpty())
                 .andExpect(jsonPath(ROOT_PATH).isArray())
-                .andExpect(jsonPath("$[0].firstName").value("adam@wp.pl"));
-    }
-
-
-    private Doctor createANewDoctor() {
-        return Doctor.builder()
-                .email("adam@wp.pl")
-                .password("adam123")
-                .firstName("Adam")
-                .lastName("Nowak")
-                .specialization(Specialization.OPHTHALMOLOGY)
-                .facilities(null)
-                .build();
+                .andExpect(jsonPath("$[0].firstName").value("Pawel"))
+                .andExpect(jsonPath("$[0].facilitiesId").value(1L));
     }
 
     private String json(Object o) throws IOException {

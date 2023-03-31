@@ -1,5 +1,6 @@
 package com.github.annakosonog.medicalclinic.service;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
+
+import com.github.annakosonog.medicalclinic.exception.DataNotFoundException;
 import com.github.annakosonog.medicalclinic.exception.visit.IncorrectVisitException;
 import com.github.annakosonog.medicalclinic.exception.visit.PatientVisitIsUnavailable;
 import com.github.annakosonog.medicalclinic.exception.visit.VisitNotFoundException;
@@ -12,6 +13,7 @@ import com.github.annakosonog.medicalclinic.repository.PatientRepository;
 import com.github.annakosonog.medicalclinic.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,19 +46,19 @@ public class VisitService {
         Visit visit = visitRepository.findById(id).orElseThrow(VisitNotFoundException::new);
 
         if (visit.getPatient() != null) {
-            throw new PatientVisitIsUnavailable ("Date already taken");
+            throw new PatientVisitIsUnavailable("Date already taken");
         }
 
         if (visit.getTerm().isBefore(LocalDateTime.now())) {
             throw new IncorrectVisitException("Date is before");
         }
-        final Patient patient = patientRepository.findByEmail(patientDTO.getEmail()).orElseThrow(PatientNotFoundException::new);
+        final Patient patient = patientRepository.findByEmail(patientDTO.getEmail()).orElseThrow(() -> new DataNotFoundException("Patient not found"));
         visit.setPatient(patient);
         visitRepository.save(visit);
     }
 
     public List<VisitDTO> findAllVisitPatient(PatientDTO patientDTO) {
-        Patient patient = patientRepository.findByEmail(patientDTO.getEmail()).orElseThrow(PatientNotFoundException::new);
+        Patient patient = patientRepository.findByEmail(patientDTO.getEmail()).orElseThrow(() -> new DataNotFoundException("Patient not found"));
         return visitRepository.findAll()
                 .stream()
                 .filter(visit -> visit.getPatient().getId().equals(patient.getId()))

@@ -55,7 +55,7 @@ databaseChangeLog:
                   type: varchar(10)
               - column:
                   name: post_code
-                  type: varchar(5)
+                  type: varchar(6)
               - column:
                   name: street
                   type: varchar(15)
@@ -70,7 +70,7 @@ databaseChangeLog:
       author: annaKosonog
       changes:
         - createTable:
-            tableName: doctor_facility
+            tableName: doctor_facilities
             columns:
               - column:
                   name: doctor_id

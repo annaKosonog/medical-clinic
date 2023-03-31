@@ -1,5 +1,6 @@
 package com.github.annakosonog.medicalclinic.security.config;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
+
+import com.github.annakosonog.medicalclinic.exception.DataNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Role;
 import com.github.annakosonog.medicalclinic.model.UserData;
 import com.github.annakosonog.medicalclinic.repository.UserRepository;
@@ -30,7 +31,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(UserRepository repository) {
         return username -> repository.findByEmail(username)
                 .map(this::build)
-                .orElseThrow(PatientNotFoundException::new);
+                .orElseThrow(() -> new DataNotFoundException("Patient not found"));
     }
 
     @Bean
@@ -44,8 +45,8 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/patients").anonymous()
-                .antMatchers(HttpMethod.GET,"/patients").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers(HttpMethod.POST, "/patients").anonymous()
+                .antMatchers(HttpMethod.GET, "/patients").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers("/h2-console/**").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers("/patients/**").hasRole(Role.PATIENT.name().toUpperCase())
                 .antMatchers(HttpMethod.POST, "/visits").hasRole(Role.ADMIN.name().toUpperCase())
@@ -53,6 +54,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/visits").hasRole(Role.PATIENT.name().toUpperCase())
                 .antMatchers(HttpMethod.POST, "/doctors").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers(HttpMethod.GET, "/doctors").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers(HttpMethod.POST, "/facilities").hasRole(Role.ADMIN.name().toUpperCase())
+                .antMatchers(HttpMethod.GET, "/facilities").authenticated()
+                .antMatchers(HttpMethod.POST, "/doctors/**").authenticated()
                 .anyRequest().denyAll()
                 .and().build();
     }

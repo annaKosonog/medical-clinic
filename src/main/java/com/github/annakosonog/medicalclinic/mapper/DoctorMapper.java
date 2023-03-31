@@ -1,8 +1,9 @@
 package com.github.annakosonog.medicalclinic.mapper;
 
+import com.github.annakosonog.medicalclinic.model.AssignDoctorDto;
 import com.github.annakosonog.medicalclinic.model.Doctor;
-import com.github.annakosonog.medicalclinic.model.DoctorDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -11,5 +12,6 @@ public interface DoctorMapper {
 
     DoctorMapper INSTANCE = Mappers.getMapper(DoctorMapper.class);
 
-    DoctorDto doctorToDoctorDto(Doctor doctor);
+    @Mapping(target = "facilities", ignore = true)
+    Doctor assignDoctorDtoToDoctor(AssignDoctorDto assignDoctorDto);
 }

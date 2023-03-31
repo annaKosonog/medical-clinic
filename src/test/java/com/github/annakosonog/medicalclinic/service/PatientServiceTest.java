@@ -1,9 +1,9 @@
 package com.github.annakosonog.medicalclinic.service;
 
-import com.github.annakosonog.medicalclinic.exception.patient.InvalidPatientDataException;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientAlreadyExistsException;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientException;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
+import com.github.annakosonog.medicalclinic.exception.DataAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.DataNotFoundException;
+import com.github.annakosonog.medicalclinic.exception.InvalidDetailsException;
+import com.github.annakosonog.medicalclinic.exception.MedicalClinicException;
 import com.github.annakosonog.medicalclinic.mapper.PatientMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
@@ -122,7 +122,7 @@ public class PatientServiceTest {
     void getPatient_DataIncorrect_ThrowingPatientNotFoundException() {
         final String email = "email";
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());
-        assertThrows(PatientNotFoundException.class, () -> patientService.getPatient(email));
+        assertThrows(DataNotFoundException.class, () -> patientService.getPatient(email));
     }
 
     @Test
@@ -134,13 +134,13 @@ public class PatientServiceTest {
     }
 
     @Test
-    void addPatient_DataIncorrect_ThrowingPatientAlreadyException() {
+    void addPatient_DataIncorrect_ThrowingDataAlreadyExistsException() {
         when(patientRepository.findByEmail("klara@wp.pl")).thenReturn(Optional.of(beforeSaveAKlaraKowalska));
-        assertThrows(PatientAlreadyExistsException.class, () -> patientService.addPatient(beforeSaveAKlaraKowalska));
+        assertThrows(DataAlreadyExistsException.class, () -> patientService.addPatient(beforeSaveAKlaraKowalska));
     }
 
     @Test
-    void addPatient_DataIncorrect_ThrowingPatientException() {
+    void addPatient_DataIncorrect_ThrowingMedicalClinicException() {
         Patient aJanMnich = Patient.builder()
                 .email(null)
                 .password("jan123")
@@ -151,7 +151,7 @@ public class PatientServiceTest {
                 .birthday(LocalDate.of(2001, 2, 15))
                 .build();
         when(patientRepository.findByEmail("email")).thenReturn(Optional.empty());
-        assertThrows(PatientException.class, () -> patientService.addPatient(aJanMnich));
+        assertThrows(InvalidDetailsException.class, () -> patientService.addPatient(aJanMnich));
     }
 
     @Test
@@ -164,11 +164,11 @@ public class PatientServiceTest {
     }
 
     @Test
-    void deletePatient_DataIncorrect_ThrowingPatientNotFoundException() {
+    void deletePatient_DataIncorrect_ThrowingDataNotFoundException() {
         final String email = "email";
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());
         doNothing().when(patientRepository).delete(beforeSaveAKlaraKowalska);
-        assertThrows(PatientNotFoundException.class, () -> patientService.deletePatient(email));
+        assertThrows(DataNotFoundException.class, () -> patientService.deletePatient(email));
         verify(patientRepository, never()).delete(any(Patient.class));
     }
 
@@ -191,7 +191,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void updatePatient_DataIncorrect_ThrowingPatientException() {
+    void updatePatient_DataIncorrect_ThrowingMedicalClinicException() {
         final String email = "klara@wp.pl";
         final Patient aEditKlaraKowalska = Patient.builder()
                 .email("laura@wp.pl")
@@ -204,12 +204,12 @@ public class PatientServiceTest {
                 .build();
 
         when(patientRepository.findByEmail(email)).thenReturn(Optional.of(savedAKlaraKowalska));
-        assertThrows(PatientException.class, () -> patientService.updatePatient(aEditKlaraKowalska, email));
+        assertThrows(MedicalClinicException.class, () -> patientService.updatePatient(aEditKlaraKowalska, email));
         verify(patientRepository, never()).save(any(Patient.class));
     }
 
     @Test
-    void updatePatient_DataIncorrect_ThrowingInvalidPatientDataException() {
+    void updatePatient_DataIncorrect_ThrowingInvalidDetailsException() {
         final String email = "klara@wp.pl";
         final Patient aEditKlaraKowalska = Patient.builder()
                 .email(null)
@@ -222,7 +222,7 @@ public class PatientServiceTest {
                 .build();
 
         when(patientRepository.findByEmail(email)).thenReturn(Optional.of(savedAKlaraKowalska));
-        assertThrows(InvalidPatientDataException.class, () -> patientService.updatePatient(aEditKlaraKowalska, email));
+        assertThrows(InvalidDetailsException.class, () -> patientService.updatePatient(aEditKlaraKowalska, email));
         verify(patientRepository, never()).save(any(Patient.class));
     }
 
@@ -240,7 +240,7 @@ public class PatientServiceTest {
                 .build();
 
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());
-        assertThrows(PatientNotFoundException.class, () -> patientService.updatePatient(aEditKlaraKowalska, email));
+        assertThrows(DataNotFoundException.class, () -> patientService.updatePatient(aEditKlaraKowalska, email));
         verify(patientRepository, never()).save(any(Patient.class));
     }
 
@@ -266,7 +266,7 @@ public class PatientServiceTest {
         final String email = "email";
         final String password = "klara124";
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());
-        assertThrows(PatientNotFoundException.class, () -> patientService.updatePasswordPatient(email, password));
+        assertThrows(DataNotFoundException.class, () -> patientService.updatePasswordPatient(email, password));
     }
 
     private PatientDTO aKlaraKowalskaDto() {

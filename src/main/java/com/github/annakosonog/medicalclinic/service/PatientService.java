@@ -1,8 +1,9 @@
 package com.github.annakosonog.medicalclinic.service;
-import com.github.annakosonog.medicalclinic.exception.patient.InvalidPatientDataException;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientAlreadyExistsException;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientException;
-import com.github.annakosonog.medicalclinic.exception.patient.PatientNotFoundException;
+
+import com.github.annakosonog.medicalclinic.exception.DataAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.DataNotFoundException;
+import com.github.annakosonog.medicalclinic.exception.InvalidDetailsException;
+import com.github.annakosonog.medicalclinic.exception.MedicalClinicException;
 import com.github.annakosonog.medicalclinic.mapper.PatientMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
@@ -10,6 +11,7 @@ import com.github.annakosonog.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,17 +35,20 @@ public class PatientService {
     }
 
     public PatientDTO getPatient(String email) {
-        Patient patient = patientRepository.findByEmail(email).orElseThrow(PatientNotFoundException::new);
+        Patient patient = patientRepository.findByEmail(email).orElseThrow(() -> new DataNotFoundException("Patient not found"));
         return patientMapper.patientToPatientDto(patient);
     }
 
     public void addPatient(Patient patient) {
         Optional<Patient> existingPatient = patientRepository.findByEmail(patient.getEmail());
         if (existingPatient.isPresent()) {
-            throw new PatientAlreadyExistsException();
+            throw new DataAlreadyExistsException("Patient already exists");
         }
         if (patient.getEmail() == null) {
-            throw new PatientException("Invalid patient data");
+            throw new InvalidDetailsException("Invalid patient data");
+        }
+        if(!(isValid(patient))){
+            throw new InvalidDetailsException("Invalid patient data");
         }
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         patientRepository.save(patient);
@@ -51,29 +56,29 @@ public class PatientService {
 
     public void deletePatient(String email) {
         Patient patient = patientRepository.findByEmail(email)
-                .orElseThrow(PatientNotFoundException::new);
+                .orElseThrow(() -> new DataNotFoundException("Patient not found"));
         patientRepository.delete(patient);
     }
 
     public void updatePatient(Patient patient, String email) {
         Patient entity = patientRepository.findByEmail(email)
-                .orElseThrow(PatientNotFoundException::new);
+                .orElseThrow(() -> new DataNotFoundException("Patient not found"));
 
         if (!entity.getIdCardNo().equals(patient.getIdCardNo())) {
-            throw new PatientException("Do not change card number");
+            throw new MedicalClinicException("Do not change card number");
         }
         if (patient.getId() == null) {
             patient.setId(entity.getId());
         }
         if (!isValid(patient)) {
-            throw new InvalidPatientDataException("Invalid patient data");
+            throw new InvalidDetailsException("Invalid patient data");
         }
         patientRepository.save(patient);
     }
 
     public void updatePasswordPatient(String email, String password) {
         Patient patient = patientRepository.findByEmail(email)
-                .orElseThrow(PatientNotFoundException::new);
+                .orElseThrow(() -> new DataNotFoundException("Patient not found"));
         if (password == null) {
             throw new NullPointerException("Password not be null");
         }
