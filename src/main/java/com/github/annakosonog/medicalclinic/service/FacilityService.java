@@ -1,7 +1,7 @@
 package com.github.annakosonog.medicalclinic.service;
 
-import com.github.annakosonog.medicalclinic.exception.facility.FacilityAlreadyExistsException;
-import com.github.annakosonog.medicalclinic.exception.facility.InvalidFacilityDataException;
+import com.github.annakosonog.medicalclinic.exception.DataAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.InvalidDetailsException;
 import com.github.annakosonog.medicalclinic.mapper.FacilityMapper;
 import com.github.annakosonog.medicalclinic.model.Doctor;
 import com.github.annakosonog.medicalclinic.model.Facility;
@@ -9,6 +9,7 @@ import com.github.annakosonog.medicalclinic.model.FacilityDto;
 import com.github.annakosonog.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,13 +36,14 @@ public class FacilityService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void createANewFacility(FacilityDto facilityDto) {
         final Optional<Facility> name = facilityRepository.findByName(facilityDto.getName());
         if (name.isPresent()) {
-            throw new FacilityAlreadyExistsException();
+            throw new DataAlreadyExistsException("Facility already exists");
         }
         if (!isValid(facilityDto)) {
-            throw new InvalidFacilityDataException("Incorrect data for facility");
+            throw new InvalidDetailsException("Incorrect data for facility");
         }
         final Facility facility = facilityMapper.facilityDtoToFacility(facilityDto);
         facilityRepository.save(facility);
