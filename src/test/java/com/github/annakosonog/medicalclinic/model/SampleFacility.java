@@ -1,7 +1,6 @@
 package com.github.annakosonog.medicalclinic.model;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 public interface SampleFacility {
@@ -41,7 +40,7 @@ public interface SampleFacility {
                 Collections.EMPTY_SET);
     }
 
-    default Facility createAMedSan() {
+    default Facility createAMedSanBefore() {
         return allParametersWithoutId(
                 "MedSan",
                 "Warszawa",
@@ -60,5 +59,25 @@ public interface SampleFacility {
                 "Kwiatowa",
                 "2b",
                 Collections.EMPTY_SET);
+    }
+
+    default Facility aMedicusWithDoctorFacility() {
+        return allParameterWithId(
+                1L,
+                "Medicus",
+                "Warszawa",
+                "00-001",
+                "Familijna",
+                "103",
+                Collections.singleton(
+                        Doctor.builder()
+                                .id(2L)
+                                .email("adam@wp.pl")
+                                .password("adam123")
+                                .firstName("Adam")
+                                .lastName("Nowak")
+                                .specialization(Specialization.OPHTHALMOLOGY)
+                                .facilities(null)
+                                .build()));
     }
 }
