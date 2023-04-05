@@ -1,10 +1,10 @@
 package com.github.annakosonog.medicalclinic.mapper;
+
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface PatientMapper {
@@ -14,8 +14,6 @@ public interface PatientMapper {
     PatientDTO patientToPatientDto(Patient patient);
 
     Patient patientDtoToPatient(PatientDTO patientDTO);
-
-    List<Patient> patientDtoToPatientList(List<PatientDTO> patientDTO);
 
 
 }

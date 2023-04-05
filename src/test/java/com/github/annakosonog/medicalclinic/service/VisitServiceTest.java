@@ -1,7 +1,8 @@
 package com.github.annakosonog.medicalclinic.service;
-import com.github.annakosonog.medicalclinic.exception.visit.IncorrectVisitException;
-import com.github.annakosonog.medicalclinic.exception.visit.PatientVisitIsUnavailable;
-import com.github.annakosonog.medicalclinic.exception.visit.VisitNotFoundException;
+
+import com.github.annakosonog.medicalclinic.exception.DataAlreadyExistsException;
+import com.github.annakosonog.medicalclinic.exception.DataNotFoundException;
+import com.github.annakosonog.medicalclinic.exception.InvalidDetailsException;
 import com.github.annakosonog.medicalclinic.mapper.VisitMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
@@ -20,7 +21,6 @@ import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,20 +103,20 @@ class VisitServiceTest {
     @Test
     void createNewVisit_DataIncorrect_IncorrectDate() {
         LocalDateTime beforeDate = LocalDateTime.of(2022, 3, 17, 16, 15);
-        assertThrows(IncorrectVisitException.class, () -> visitService.createNewVisit(beforeDate));
+        assertThrows(InvalidDetailsException.class, () -> visitService.createNewVisit(beforeDate));
         verify(visitRepository, never()).save(any(Visit.class));
     }
 
     @Test
     void createNewVisit_DataIncorrect_IncorrectTime() {
         final LocalDateTime dateTime = LocalDateTime.now().withMinute(17);
-        assertThrows(IncorrectVisitException.class, () -> visitService.createNewVisit(dateTime));
+        assertThrows(InvalidDetailsException.class, () -> visitService.createNewVisit(dateTime));
     }
 
     @Test
     void createNewVisit_DataIncorrect_DateAlreadyExists() {
         when(visitRepository.existsByTerm(dateTime)).thenReturn(true);
-        assertThrows(IncorrectVisitException.class, () -> visitService.createNewVisit(dateTime));
+        assertThrows(DataAlreadyExistsException.class, () -> visitService.createNewVisit(dateTime));
     }
 
     @Test
@@ -132,16 +132,16 @@ class VisitServiceTest {
     void patientRegistrationForAnAppointment_VisitNotFoundException() {
         final long id = 25L;
         when(visitRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(VisitNotFoundException.class, () -> visitService.patientRegistrationForAnAppointment(id, buildPatientDto()));
+        assertThrows(DataNotFoundException.class, () -> visitService.patientRegistrationForAnAppointment(id, buildPatientDto()));
     }
 
     @Test
-    void patientRegistrationForAnAppointment_PatientVisitIsUnavailable() {
+    void patientRegistrationForAnAppointment_DataAlreadyExistsException() {
         final long id = 1L;
         Visit incorrectData = this.savedVisitToDb;
         incorrectData.setPatient(afterRegistrationPatientToDb);
         when(visitRepository.findById(id)).thenReturn(Optional.of(incorrectData));
-        assertThrows(PatientVisitIsUnavailable.class, () -> visitService.patientRegistrationForAnAppointment(id, buildPatientDto()));
+        assertThrows(DataAlreadyExistsException.class, () -> visitService.patientRegistrationForAnAppointment(id, buildPatientDto()));
     }
 
     @Test
@@ -150,7 +150,7 @@ class VisitServiceTest {
         Visit incorrectData = savedVisitToDb;
         incorrectData.setTerm(LocalDateTime.now().minusDays(1L).withMinute(15));
         when(visitRepository.findById(id)).thenReturn(Optional.of(incorrectData));
-        assertThrows(IncorrectVisitException.class, () -> visitService.patientRegistrationForAnAppointment(id, buildPatientDto()));
+        assertThrows(InvalidDetailsException.class, () -> visitService.patientRegistrationForAnAppointment(id, buildPatientDto()));
     }
 
     @Test

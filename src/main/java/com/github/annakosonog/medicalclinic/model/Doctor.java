@@ -1,6 +1,5 @@
 package com.github.annakosonog.medicalclinic.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,4 +39,8 @@ public class Doctor extends UserData {
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id"))
     private List<Facility> facilities;
+
+    {
+        super.setRole(Role.DOCTOR);
+    }
 }

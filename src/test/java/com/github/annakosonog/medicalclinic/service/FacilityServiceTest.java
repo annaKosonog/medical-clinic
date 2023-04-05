@@ -8,7 +8,6 @@ import com.github.annakosonog.medicalclinic.model.FacilityDto;
 import com.github.annakosonog.medicalclinic.model.SampleFacility;
 import com.github.annakosonog.medicalclinic.model.SampleFacilityDto;
 import com.github.annakosonog.medicalclinic.repository.FacilityRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

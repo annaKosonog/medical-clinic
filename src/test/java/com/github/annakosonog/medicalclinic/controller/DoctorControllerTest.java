@@ -7,7 +7,6 @@ import com.github.annakosonog.medicalclinic.model.SampleDoctor;
 import com.github.annakosonog.medicalclinic.model.SampleDoctorDto;
 import com.github.annakosonog.medicalclinic.model.SampleFacility;
 import com.github.annakosonog.medicalclinic.model.SampleFacilityDto;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -83,7 +82,7 @@ public class DoctorControllerTest implements SampleDoctor, SampleAssignDoctorDto
                 .andExpect(jsonPath(ROOT_PATH).value("Invalid doctor data"));
     }
 
-    @WithMockUser(roles = "PATIENT")
+    @WithMockUser(roles = "DOCTOR")
     @Test
     void assignDoctorToFacilityDataCorrect() throws Exception {
         final Long doctorId = 2L;
@@ -93,7 +92,7 @@ public class DoctorControllerTest implements SampleDoctor, SampleAssignDoctorDto
         doctorController.addNewDoctor(aCreateDoctorPawelBeforeSave());
         facilityController.addNewFacility(aMedicusDto());
 
-        mockMvc.perform(MockMvcRequestBuilders.post(DOCTOR_PATH + "/" + doctorId)
+        mockMvc.perform(MockMvcRequestBuilders.patch(DOCTOR_PATH + "/" + doctorId)
                 .param("facilityId", String.valueOf(facilityId))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -119,7 +118,7 @@ public class DoctorControllerTest implements SampleDoctor, SampleAssignDoctorDto
                 .andExpect(jsonPath(ROOT_PATH).isNotEmpty())
                 .andExpect(jsonPath(ROOT_PATH).isArray())
                 .andExpect(jsonPath("$[0].firstName").value("Pawel"))
-                .andExpect(jsonPath("$[0].facilitiesId").value(1L));
+                .andExpect(jsonPath("$[0].facilitiesId").value(1));
     }
 
     private String json(Object o) throws IOException {

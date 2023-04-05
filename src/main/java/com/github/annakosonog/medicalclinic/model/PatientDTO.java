@@ -14,6 +14,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class PatientDTO {
+
     private String email;
     private String firstName;
     private String lastName;

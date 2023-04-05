@@ -13,7 +13,5 @@ public interface VisitMapper {
 
     VisitDTO visitToVisitDto(Visit visit);
 
-    Visit visitDtoToVisit(VisitDTO visitDTO);
-
 
 }

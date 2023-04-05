@@ -36,5 +36,4 @@ public class Facility {
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY,
             mappedBy = "facilities")
     private Set<Doctor> doctors;
-
 }

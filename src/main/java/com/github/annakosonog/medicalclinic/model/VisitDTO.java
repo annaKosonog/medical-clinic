@@ -1,6 +1,5 @@
 package com.github.annakosonog.medicalclinic.model;
 
-
 import lombok.Builder;
 import lombok.Data;
 

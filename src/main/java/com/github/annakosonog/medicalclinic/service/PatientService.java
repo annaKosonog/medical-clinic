@@ -47,7 +47,7 @@ public class PatientService {
         if (patient.getEmail() == null) {
             throw new InvalidDetailsException("Invalid patient data");
         }
-        if(!(isValid(patient))){
+        if (!(isValid(patient))) {
             throw new InvalidDetailsException("Invalid patient data");
         }
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));

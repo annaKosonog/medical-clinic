@@ -1,4 +1,4 @@
-package com.github.annakosonog.medicalclinic.security.config;
+package com.github.annakosonog.medicalclinic.security;
 
 import com.github.annakosonog.medicalclinic.exception.DataNotFoundException;
 import com.github.annakosonog.medicalclinic.model.Role;
@@ -56,7 +56,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/doctors").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers(HttpMethod.POST, "/facilities").hasRole(Role.ADMIN.name().toUpperCase())
                 .antMatchers(HttpMethod.GET, "/facilities").authenticated()
-                .antMatchers(HttpMethod.POST, "/doctors/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/doctors/**").hasRole(Role.DOCTOR.name().toUpperCase())
+                .antMatchers("/other/**").permitAll()
                 .anyRequest().denyAll()
                 .and().build();
     }

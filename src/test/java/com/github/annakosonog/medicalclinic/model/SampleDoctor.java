@@ -31,7 +31,7 @@ public interface SampleDoctor {
 
     default Doctor aPawelToDbWithMedicusFacility() {
         List<Facility> addFacilities = new ArrayList<>();
-        addFacilities.add( new Facility(
+        addFacilities.add(new Facility(
                 1L,
                 "Medicus",
                 "Warszawa",

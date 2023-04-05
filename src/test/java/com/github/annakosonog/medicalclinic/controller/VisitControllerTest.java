@@ -1,14 +1,17 @@
 package com.github.annakosonog.medicalclinic.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.annakosonog.medicalclinic.model.Patient;
 import com.github.annakosonog.medicalclinic.model.PatientDTO;
 import com.github.annakosonog.medicalclinic.model.Visit;
-import com.github.annakosonog.medicalclinic.model.VisitDTO;
+import org.junit.After;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -16,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,6 +45,20 @@ class VisitControllerTest {
     @Autowired
     private PatientController patientController;
 
+    @BeforeEach
+    void setUp() {
+        Optional.ofNullable(visitController.addNewVisit(createLocalDateTime().plusDays(1L)))
+                .map(ResponseEntity::getBody)
+                .ifPresent(visitDTO -> visitController.removeVisit());
+    }
+
+    @After
+    void cleanUp() {
+        visitController.removeVisit();
+        patientController.deletePatient("klara@wp.pl");
+    }
+
+
     @WithMockUser(roles = "ADMIN")
     @Test
     void addNewVisitDataCorrect() throws Exception {
@@ -49,7 +67,9 @@ class VisitControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath(ROOT_PATH).isNotEmpty());
+                .andExpect(jsonPath(ROOT_PATH).isNotEmpty())
+                .andExpect(jsonPath(ROOT_PATH).isString())
+                .andExpect(jsonPath(ROOT_PATH).value("Visit  was added successfully"));
     }
 
     @WithMockUser(roles = "ADMIN")
@@ -93,7 +113,7 @@ class VisitControllerTest {
     @WithMockUser(roles = "PATIENT")
     @Test
     void appointmentOfThePatientWithDateCorrect() throws Exception {
-        final long id = 1L;
+        final long id = 6L;
         PatientDTO patientDTO = buildPatientDto();
         visitController.addNewVisit(createLocalDateTime());
         patientController.addPatient(createPatient());
@@ -124,9 +144,9 @@ class VisitControllerTest {
     @WithMockUser(roles = "PATIENT")
     @Test
     void appointmentOfThePatientThrowPatientVisitIsUnavailable() throws Exception {
-        final long id = 1L;
+        final long id = 2L;
         PatientDTO patientDTO = aLauraKowalskaDto();
-        patientController.addPatient(createPatient());
+        //       patientController.addPatient(createPatient());
         visitController.addNewVisit(createLocalDateTime());
         visitController.appointmentOfThePatient(id, buildPatientDto());
 
@@ -150,7 +170,7 @@ class VisitControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(ROOT_PATH).value("Patient not found"));
+                .andExpect(jsonPath(ROOT_PATH).value("Visit not found"));
     }
 
     private String json(Object o) throws IOException {
@@ -179,6 +199,14 @@ class VisitControllerTest {
 
     private static LocalDateTime createLocalDateTime() {
         return LocalDateTime.now().plusDays(4L)
+                .withHour(16)
+                .withMinute(15)
+                .withSecond(0)
+                .withNano(0);
+    }
+
+    private static LocalDateTime localDateTimeSavedWithDb() {
+        return LocalDateTime.now().plusDays(1L)
                 .withHour(16)
                 .withMinute(15)
                 .withSecond(0)
