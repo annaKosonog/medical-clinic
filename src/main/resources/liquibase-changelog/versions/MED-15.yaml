@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+     id: 1
+     author: annaKosonog
+     changes:
+       - createTable:
+          tableName: admin
+          columns:
+            - column:
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: pk_admin_id
+                name: id
+                type: int
+       - createTable:
+          tableName: user_data
+          columns:
+            - column:
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: pk_user_data_id
+                name: id
+                type: int
+            - column:
+               name: email
+               type: varchar(50)
+            - column:
+                name: password
+                type: varchar(512)
+            - column:
+                name: role
+                type: varchar(10)
+       - insert:
+           tableName: user_data
+           columns:
+             - column:
+                 name: email
+                 value: admin
+             - column:
+                 name: password
+                 value: $2a$11$VkYr6NFV4V4PcdiLuI3gSuS7I02Sia3Thv1jtk10f0pp4eZLQFPQS
+             - column:
+                 name: role
+                 value: ADMIN
+             - sql:
+                 sql: INSERT INTO admin() VALUES()
