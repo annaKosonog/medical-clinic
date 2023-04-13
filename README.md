@@ -8,7 +8,8 @@
 
 ## General info:
 This application is used to manage the clinic. The implemented methods use CRUD operations (Create, Read, Update, Delete), which allow you to modify 
-the clinic's resources. It was mainly based on the Spring Framework and the H2 database.
+the clinic's resources. It was mainly based on the Spring Framework and the H2 database.  In addition, access to resources/endpoints was secured 
+by granting appropriate permissions to users.
 
 ## Technologies:
 * Java
