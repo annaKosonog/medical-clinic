@@ -13,8 +13,7 @@ in which roles were created to secure access to specific endpoints in the applic
 
 ## Technologies:
 * Java
-* Spring Boot
-* Spring Security
+* Spring Framework (Spring Date, Spring Security)
 * H2 Database
 
 ## Tools:
