@@ -7,9 +7,8 @@
 * [Setup](#setup)
 
 ## General info:
-Application for management clinic. CRUD (Create, Read, Update, Delete) operations were used for the project using spring boot and an in-memory H2 database. 
-Implemented methods allow additions, updates and resource search. In this program, the Spring Security security tool was additionally used,
-in which roles were created to secure access to specific endpoints in the application. Swagger was used to better document and use REST API services.
+This application is used to manage the clinic. The implemented methods use CRUD operations (Create, Read, Update, Delete), which allow you to modify 
+the clinic's resources. It was mainly based on the Spring Framework and the H2 database.
 
 ## Technologies:
 * Java
